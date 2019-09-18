@@ -1,0 +1,210 @@
+\documentclass[10pt]{article}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{ulem}
+\usepackage{framed}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{subfigure}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage[capitalise,noabbrev]{cleveref}
+\usepackage[usenames,dvipsnames]{xcolor}
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\setlength{\textwidth}{6.5in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\textheight}{9.0in}
+\setlength{\topmargin}{0in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\footskip}{0.333333in}
+
+\renewcommand{\familydefault}{ppl}
+
+\newcommand{\bx}{{\boldsymbol x}}
+\newcommand{\bphi}{{\boldsymbol \phi}}
+\newcommand{\bbeta}{{\boldsymbol \beta}}
+\DeclareMathOperator{\betafunc}{Beta}
+\DeclareMathOperator{\argmax}{arg\,max}
+
+\newcommand{\todo}[1]{\textbf{\textcolor{red}{to do: #1}} }
+
+
+\begin{document}
+
+\section*{Machine Learning Fall 2019 Homework 1}
+
+Homework must be submitted electronically on Canvas. Make sure to explain you reasoning or show your derivations. Except for answers that are especially straightforward, you will lose points for unjustified answers, even if they are correct. 
+
+\section*{General Instructions}
+
+You are allowed to work with at most one other student on the homework. With your partner, you will submit only one copy, and you will share the grade that your submission receives. You should set up your partnership on Canvas as a two-person group. 
+
+Submit your homework electronically on Canvas. We recommend using LaTeX, especially for the written problems. But you are welcome to use anything as long as it is neat and readable. 
+
+Include a README file that describes all other included files. Indicate which files you modified. You are welcome to create additional functions, files, or scripts, and you are also welcome to modify the included interfaces for existing functions if you prefer a different organization. 
+
+Since we may work on some of the homework in class, clearly indicate which parts of your submitted homework are work done in class and which are your own work. 
+
+Relatedly, cite all outside sources of information and ideas. 
+
+\section*{Written Problems}
+
+\begin{enumerate}
+
+\item (5 points) Show what the recursive decision tree learning algorithm would choose for the first split of the following dataset:
+
+\begin{tabular}{c|cccc|c}
+\toprule
+ID & $X_1$ & $X_2$& $X_3$ & $X_4$ & $Y$\\
+\midrule
+1 & 0 & 0 & 0 & 0 & 0\\
+2 & 0 & 0 & 0 & 1 & 0\\
+3 & 0 & 0 & 1 & 0 & 0\\
+4 & 0 & 0 & 1 & 1 & 0\\
+5 & 0 & 1 & 0 & 0 & 0\\
+6 & 0 & 1 & 0 & 1 & 1\\ 
+7 & 0 & 1 & 1 & 0 & 1\\ 
+8 & 0 & 1 & 1 & 1 & 1\\ 
+9 & 1 & 0 & 0 & 0 & 1\\ 
+10 & 1 & 0 & 0 & 1 & 1\\ 
+\bottomrule
+\end{tabular}
+
+Assume that the criterion for deciding the best split is entropy reduction (i.e., information gain). If there are any ties, choose the first feature to split on tied for the best score. Show your calculations in your response.
+
+(Hint: this dataset is one of the test cases in the programming assignment, so you should be able to use your answer here to debug your code.)
+
+\item A Bernoulli distribution has the following likelihood function for a data set $\cal D$:
+\begin{align}
+p({\cal D} | \theta) &= \theta^{N_1} (1 - \theta)^{N_0},
+\label{eq:bernoulli}
+\end{align}
+where $N_1$ is the number of instances in data set $\cal D$ that have value 1 and $N_0$ is the number in $\cal D$ that have value 0. The maximum likelihood estimate is 
+\begin{align}
+\hat{\theta} &= \frac{N_1}{N_1 + N_0}.
+\label{eq:mle}
+\end{align}
+
+\begin{enumerate}
+
+\item (5 points) Derive the maximum likelihood estimate above by solving for the maximum of the likelihood. I.e., show the mathematics that get from \cref{eq:bernoulli} to \cref{eq:mle}.
+
+\item (5 points) Suppose we now want to maximize a posterior likelihood
+\begin{align}
+p(\theta | {\cal D}) &= \frac{p({\cal D} | \theta) p(\theta)}{p({\cal D})},
+\end{align}
+where we use the Bernoulli likelihood and a (slight variant\footnote{For convenience, we are using the exponent of $\alpha$ instead of the standard $\alpha-1$.} of a) symmetric Beta prior over the Bernoulli parameter
+\begin{align}
+p(\theta) &\propto \theta^{\alpha} (1 - \theta)^{\alpha}.
+\end{align}
+Derive the maximum posterior mean estimate.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\section*{Programming Assignment}
+
+For this homework, you will build two text categorization classifiers: one using naive Bayes and the other using decision trees. You will write general code for cross-validation that will apply to either of your classifiers. 
+
+\paragraph{Data and starter code:} In the HW1 archive, you should find the 20newsgroups data set (also available from the original source \url{http://qwone.com/~jason/20Newsgroups/}). This data set, whose origin is somewhat fuzzy, consists of newsgroup posts from an earlier era of the Internet. The posts are in different categories, and this data set has become a standard benchmark for text classification methods. 
+
+The data is represented in a bag-of-words format, where each post is represented by what words are present in it, without any consideration of the order of the words. 
+
+We have also provided a unit test class in \texttt{tests.py}, which contains unit tests for each type of learning model. These unit tests may be easier to use for debugging in an IDE like PyCharm than the iPython notebook. A successful implementation should pass all unit tests and run through the entire iPython notebook without issues. You can run the unit tests from a *nix command line with the command
+\begin{verbatim}
+python -m unittest -v tests
+\end{verbatim}
+or you can use an IDE's unit test interface. These tests are not foolproof, so it's possible for code that does not meet the requirements for full credit to pass the tests (and, though it would be surprising, it may be possible for full credit code to fail the tests).
+
+Before starting all the tasks, examine the entire codebase. Follow the code from the iPython notebook to see which methods it calls. Make sure you understand what all of the code does. 
+
+Your required tasks follow.
+
+\begin{enumerate}
+
+\item (0 points) Examine the iPython notebook \texttt{test\_predictors.ipynb}. This notebook uses the learning algorithms and predictors you will implement in the first part of the assignment. Read through the data-loading code and the experiment code to make sure you understand how each piece works.
+
+\item (0 points) Examine the function \texttt{calculate\_information\_gain} in \texttt{decision\_tree.py}. The function takes in training data and training labels and computes the information gain for each feature. That is, for each feature dimension, compute
+\begin{equation}
+\begin{aligned}
+G(Y, X_j) &= H(Y) - H(Y|X_j)\\
+&= - \sum_{y} \Pr(Y = y) \log \Pr(Y = y) +\\
+&~~~~~~~ \sum_{x_j} \Pr(X_j = x_j) \sum_{y} \Pr(Y = y | X_j = x_j) \log \Pr(Y = y | X_j = x_j).
+\end{aligned}
+\label{eq:infogain}
+\end{equation}
+Your function should return the vector
+\begin{equation}
+[G(Y, X_1), \ldots, G(Y, X_d)]^\top.
+\end{equation}
+
+You will use this function to do feature selection and as a subroutine for decision tree learning. Note how the function avoids loops over the dataset and only loops over the number of classes. Follow this style to avoid slow Python loops; use \texttt{numpy} array operations whenever possible. 
+
+\item (5 points) Finish the functions \texttt{naive\_bayes\_train} and \texttt{naive\_bayes\_predict} in \texttt{naive\_bayes.py}. The training algorithm should find the maximum likelihood parameters for the probability distribution
+\[
+\Pr(y_i = c | \bx_i) = \frac{\Pr(y_i = c) \prod_{w \in W} \Pr(x_{iw} | y_i = c)}{\Pr(x_i)}.
+\]
+Make sure to use log-space representation for these probabilities, since they will become very small, and notice that you can accomplish the goal of naive Bayes learning without explicitly computing the prior probability $\Pr(x_i)$. In other words, you can predict the most likely class label without explicitly computing that quantity. 
+
+Implement additive smoothing (\url{https://en.wikipedia.org/wiki/Additive_smoothing}) for your naive Bayes learner. One natural way to do this is to let the input parameter \texttt{params} simply be the prior count for each word. For a parameter $\alpha$, this would mean your maximum likelihood estimates for any Bernoulli variable $X$ would be 
+\[
+\Pr(X) = \frac{(\textrm{\# examples where}~X) + \alpha}{(\textrm{Total \# of examples}) + 2 \alpha}.
+\]
+Notice that if $\alpha = 0$, you get the standard maximum likelihood estimate. Also, make sure to multiply $\alpha$ by the total number of possible outcomes in the distribution. For the label variables in the 20newsgroups data, there are 20 possible outcomes, and for the word-presence features, there are two.
+
+\item (5 points) Finish the functions \texttt{recursive\_tree\_train} and \texttt{decision\_tree\_predict} in \texttt{decision\_tree.py}. Note that \texttt{recursive\_tree\_train} is a helper function used by \texttt{decision\_tree\_train}, which is already completed for you. You'll have to design a way to represent the decision tree in the \texttt{model} object. Your training algorithm should take a parameter that is the maximum depth of the decision tree, and the learning algorithm should then greedily grow a tree of that depth. Use the information-gain measure to determine the branches (hint: you're welcome to use the \texttt{calculate\_information\_gain} function). \cref{alg:decisiontree} is abstract pseudocode describing one way to implement decision tree training. You are welcome to deviate from this somewhat; there are many ways to correctly implement such procedures.
+
+\begin{algorithm}[tb]
+\begin{center}
+\caption{~~Recursive procedure to grow a classification tree}
+\label{alg:decisiontree}
+\begin{algorithmic}[1]
+\Function{fitTree}{$\cal D$, depth}
+\If{not worth splitting (because $\cal D$ is all one class or max depth is reached)}
+	\State node.prediction $\leftarrow \argmax_c \sum_{(\bx, y) \in {\cal D}} I( y = c )$
+	\State \Return node
+	\EndIf
+\State $w \leftarrow \argmax_{w'} G(Y, X_w)$ 
+\Comment{See \cref{eq:infogain}}
+\State node.test $\leftarrow w$
+\State node.left $\leftarrow$ \textsc{fitTree}(${\cal D}_L$, depth+1)
+\Comment{where ${\cal D}_L := \{ (\bx,y) \in {\cal D} | x_w = 0 \}$}
+\State node.right $\leftarrow$ \textsc{fitTree}(${\cal D}_R$, depth+1)
+\Comment{where ${\cal D}_R := \{ (\bx,y) \in {\cal D} | x_w = 1 \}$}
+\State \Return node
+\EndFunction
+\end{algorithmic}
+\end{center}
+\end{algorithm}
+
+The pseudocode suggests building a tree data structure that stores in each node either (1) a prediction or (2) a word to split on and child nodes. The pseudocode also includes the formula for the entropy criterion for selecting which word to split on. 
+
+The prediction function should have an analogous recursion, where it receives a data example and a node. If the node has children, the function should determine which child to recursively predict with. If it has no children, it should return the prediction stored at the node. 
+
+\item (5 points) Finish the function \texttt{cross\_validate} in \texttt{crossval.py}, which takes a training algorithm, a prediction algorithm, a data set, labels, parameters, and the number of folds as input and performs cross-fold validation using that many folds. For example, calling
+\begin{verbatim}
+params['alpha'] = 1.0
+score = cross_validate(naive_bayes_train, naive_bayes_predict, train_data, 
+           train_labels, 10, params)
+\end{verbatim}
+will compute the 10-fold cross-validation accuracy of naive Bayes using regularization parameter $\alpha = 1.0$. 
+
+The cross-validation should split the input data set into \texttt{folds} subsets. Then iteratively hold out each subset: train a model using all data \textit{except} the subset and evaluate the accuracy on the held-out subset. The function should return the average accuracy over all \texttt{folds} splits. 
+
+Some code to manage the indexing of the splits is included. You are welcome to change it if you prefer a different way of organizing the indexing.
+
+Once you complete this last step, you should be able to run the notebook \texttt{cv\_predictors.ipynb}, which should use cross validation to compare decision trees to naive Bayes on the 20-newsgroups task. Naive Bayes should do be much more accurate than decision trees, but the cross-validation should find a decision tree depth that performs a bit better than the depth hard coded into \texttt{test\_predictors.ipynb}.
+
+\end{enumerate}
+
+\end{document}
+
+

@@ -1,2 +1,3 @@
-# ML2019hw1
-MacineLearning2019hw1
+# Machine Learning Fall 2019 Homework 1
+
+Clone or download this repository, and follow the instructions in hw1.pdf.
